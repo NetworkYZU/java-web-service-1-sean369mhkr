@@ -5,10 +5,15 @@
  */
 package lendle.courses.network.loginws;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -32,13 +37,25 @@ public class LoginInfoServlet extends HttpServlet {
     }
     
     private void getImpl1(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-        response.setContentType("text/plain;charset=UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
         try (PrintWriter out=response.getWriter(); Connection conn=DriverManager.getConnection("jdbc:derby://localhost:1527/sample", "app", "app")) {
             //select from login
             //output in id:password style
             //this time, consider the id parameter
             String id=request.getParameter("id");
-            
+            PreparedStatement pstmt=conn.prepareStatement("SELECT * FROM Login where id=?");
+  
+      
+            pstmt.setString(1,id);
+            ResultSet rs=pstmt.executeQuery();
+            if(rs.next()){
+                Map map=new HashMap();
+                map.put("id",rs.getString("ID"));
+                map.put("password",rs.getString("PASSWORD"));
+                out.print(new Gson().toJson(map));
+            }else{
+                response.setStatus(203);
+            }
             //////////////////////////////
         }catch(Exception e){
             throw new ServletException(e);
