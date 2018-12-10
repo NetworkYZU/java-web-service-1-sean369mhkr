@@ -98,6 +98,10 @@ public class LoginInfoServlet extends HttpServlet {
             //update the corresponding user
             String id=request.getParameter("id");
             String password=request.getParameter("password");
+            PreparedStatement pstmt=conn.prepareStatement("update login set PASSWORD=? where ID=?");
+            pstmt.setString(1,id);
+            pstmt.setString(2,password);
+            pstmt.executeUpdate();
             //////////////////////////////
             out.println("success");
         }catch(Exception e){
@@ -111,6 +115,9 @@ public class LoginInfoServlet extends HttpServlet {
         try (PrintWriter out=response.getWriter(); Connection conn=DriverManager.getConnection("jdbc:derby://localhost:1527/sample", "app", "app")) {
             //delete the corresponding user
             String id=request.getParameter("id");
+            PreparedStatement pstmt=conn.prepareStatement(" delete FROM Login where id=?");
+            pstmt.setString(1,id);
+            pstmt.executeUpdate();
             //////////////////////////////
             out.println("success");
         }catch(Exception e){
@@ -125,6 +132,10 @@ public class LoginInfoServlet extends HttpServlet {
             //insert the corresponding user
             String id=request.getParameter("id");
             String password=request.getParameter("password");
+            PreparedStatement pstmt=conn.prepareStatement("insert into Login(ID,PASSWORD) values(?,?)");
+            pstmt.setString(1,id);
+            pstmt.setString(2,password);
+            pstmt.executeUpdate();
             //////////////////////////////
             out.println("success");
         }catch(Exception e){

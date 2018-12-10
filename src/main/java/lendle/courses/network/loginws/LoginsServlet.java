@@ -5,12 +5,17 @@
  */
 package lendle.courses.network.loginws;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -35,11 +40,22 @@ public class LoginsServlet extends HttpServlet {
     
     
     private void service1(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-        response.setContentType("text/plain;charset=UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
         try (PrintWriter out=response.getWriter(); Connection conn=DriverManager.getConnection("jdbc:derby://localhost:1527/sample", "app", "app")) {
             //select from login
             //output in id:password style
-            
+        
+            List list=new ArrayList();
+            ResultSet rs=conn.createStatement().executeQuery("select * from login");
+            while(rs.next()){
+                Map map= new HashMap();
+                map.put("id",rs.getString("id"));
+                map.put("password",rs.getString("password"));
+                list.add(map);
+            }
+            Gson gson=new Gson();
+            String json=gson.toJson(list);
+            out.println(json);
             //////////////////////////////
         }catch(Exception e){
             throw new ServletException(e);
